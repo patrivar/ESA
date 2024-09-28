@@ -9,7 +9,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='moonS20-un14',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -54,6 +54,11 @@ def create_game(start_money, player_points, current_airport, player_name, all_ai
     game_id = cursor.lastrowid
 
     goals = get_goals()
+    goal_list = []
+    for goal in goals:
+        for i in range(0,goal['propability'], 1):
+            goal_list.append(goal['id'])
+
 
 
 '''name = input("Anna nimi: ")
