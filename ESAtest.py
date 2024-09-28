@@ -28,7 +28,7 @@ def get_airports():
 
 
 def get_goals():
-    sql = ("SELECT * FROM goals;")
+    sql = ("SELECT * FROM goal;")
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql)
     result = cursor.fetchall()
@@ -46,25 +46,43 @@ def word():
     return list1
 
 
-def create_game(start_money, player_points, current_airport, player_name, all_airports):
-    sql = ("INSERT INTO game (money, points, location, screen_name)"
-           "VALUES (start_money, player_points, current_airport, player_name);")
+def create_game(start_money, player_points, player_range, current_airport, player_name, all_airports):
+    sql = ("INSERT INTO game (money, location, screen_name, points, player_range)"
+           "VALUES (%s,%s,%s,%s,%s);")
     cursor = conn.cursor(dictionary=True)
-    cursor.execute(sql)
+    cursor.execute(sql, (start_money, current_airport, player_name, player_points, player_range))
     game_id = cursor.lastrowid
 
     goals = get_goals()
     goal_list = []
     for goal in goals:
-        for i in range(0,goal['propability'], 1):
+        for i in range(0,goal['probability'], 1):
             goal_list.append(goal['id'])
 
+    # exclude starting airport
+    goal_port = all_airports[1:].copy()
+    random.shuffle(goal_port)
+
+    for i, goal_id in enumerate(goal_list):
+        sql =  ("INSERT INTO ports(game, airport, goal) "
+                "VALUES (%s, %s, %s);)")
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
+    return game_id
 
 
-'''name = input("Anna nimi: ")
+
+
+player = input("Anna nimi: ")
 points = 20000
 money = 2000
-'''
+player_range = 0
+
+all_airports = get_airports()
+start_airport = all_airports[0]['ident']
+current_airport = start_airport
+
+game_id = create_game(money, points, player_range, start_airport, player, all_airports)
 
 # print(word())
 # print(get_airports())
