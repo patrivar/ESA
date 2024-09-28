@@ -3,7 +3,7 @@ import textwrap
 story = '''Pelaaja on voittanut arvonnassa Super lentolipun, jonka avulla hän voi
 matkustaa Euroopan isoille lentokentille hintaan 250 € / lento 1000 km säteellä.
 Sen lisäksi hän on saanut tehtäväkseen ratkaista sana-arvoitus. Sanaan kuulu
-vat kirjaimet on piilotettu arkkuihin ympäri Euroopan isoja lentokenttiä. Arkut voi
+vat 7 kirjainta on piilotettu arkkuihin ympäri Euroopan isoja lentokenttiä. Arkut voi
 vat sisältää myös rahaa, rosvoja tai tyhjää. Ratkaistakseen arvoituksen, pelaa
 jan täytyy etsiä kirjaimia tai arvata kyseinen sana. Sanaa voi yrittää arvata vain
 ja ainoastaan pelin aloituskentällä, ja arvausyrityksiä on rajallinen määrä. Pelaa
