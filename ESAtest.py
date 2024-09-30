@@ -18,7 +18,7 @@ conn = mysql.connector.connect(
 def get_airports():
     sql = """SELECT name, ident, type, iso_country, longitude_deg, latitude_deg 
            FROM airport 
-           Where continent = 'EU'
+           WHERE continent = 'EU'
            AND type = 'large_airport'
            ORDER BY RAND() LIMIT 22;"""
     cursor = conn.cursor(dictionary=True)
@@ -28,7 +28,7 @@ def get_airports():
 
 
 def get_goals():
-    sql = ("SELECT * FROM goal;")
+    sql = "SELECT * FROM goal;"
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql)
     result = cursor.fetchall()
@@ -104,6 +104,11 @@ def airports_in_range(icao,all_ports,player_range):
         if dist < player_range and not dist == 0:
             in_range.append(in_range)
         return in_range
+
+def update_location(icao, player_points, user_money, game_id):
+    sql = f"""UPDATE game SET location = %s, points = %s, money = %s WHERE id = %s"""
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(sql, (icao, player_points, user_money, game_id))
 
 player = input("Anna nimi: ")
 points = 20000
