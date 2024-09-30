@@ -36,7 +36,7 @@ def get_goals():
 
 
 def word():
-    sql = """select word from word_list ORDER BY RAND() LIMIT 1;"""
+    sql = """SELECT word FROM word_list ORDER BY RAND() LIMIT 1;"""
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql)
     rows = cursor.fetchone()
@@ -78,6 +78,20 @@ def get_airport_info(icao):
     cursor.execute(sql,(icao,))
     result = cursor.fetchone()
     return result
+
+def calculate_distance(current, target):
+    start = get_airport_info(current)
+    end = get_airport_info(target)
+    return distance.distance((start['longitude_deg'],start['latitude_deg'])
+                             (end['longitude_deg'], end['latitude_deg'])).km
+
+def airports_in_range(icao,all_ports,player_range):
+    in_range = []
+    for in_range in in_range:
+        dist = calculate_distance(icao,all_ports['ident'])
+        if dist < player_range and not dist == 0:
+            in_range.append(in_range)
+        return in_range
 
 player = input("Anna nimi: ")
 points = 20000
