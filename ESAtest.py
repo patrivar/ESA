@@ -78,7 +78,7 @@ def get_airport_info(icao):
     cursor = conn.cursor(dictionary = True)
     cursor.execute(sql,(icao,))
     result = cursor.fetchone()
-    return result
+    return
 
 def check_goals(game_id, current_airport):
     sql = """SELECT ports.id, name, money FROM ports, goal 
@@ -92,6 +92,13 @@ def check_goals(game_id, current_airport):
         return False
     return result
 
+def calculate_distance(current, next):
+    start = get_airport_info(current)
+    end = get_airport_info(next)
+    return distance.distance((start["latitude_deg"], start["longitude_deg"]),
+                             (end["latitude_deg"], end["longitude_deg"])).km
+
+
 player = input("Anna nimi: ")
 points = 20000
 money = 2000
@@ -102,5 +109,6 @@ start_airport = all_airports[0]['ident']
 current_airport = start_airport
 
 game_id = create_game(money, points, player_range, start_airport, player, all_airports)
+
 # print(word())
 # print(get_airports())
