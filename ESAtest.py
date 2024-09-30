@@ -79,6 +79,18 @@ def get_airport_info(icao):
     result = cursor.fetchone()
     return result
 
+def check_goals(game_id, current_airport):
+    sql = """SELECT ports.id, name, money FROM ports, goal 
+           WHERE goal.id = ports.id 
+           AND game = %s 
+           AND airport = %s;"""
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(sql, (game_id, current_airport))
+    result = cursor.fetchone()
+    if result == None:
+        return False
+    return result
+
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
