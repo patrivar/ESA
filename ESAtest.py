@@ -7,9 +7,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame1',
+    database='demogame_1',
     user='root',
-    password='tatti',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -70,6 +70,7 @@ def create_game(start_money, player_points, player_range, current_airport, playe
         cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
         return game_id
 
+
 def get_airport_info(icao):
     sql = """SELECT iso_country, ident, name, latitude_deg, longitud_deg
                 FROM airport
@@ -79,18 +80,27 @@ def get_airport_info(icao):
     result = cursor.fetchone()
     return result
 
+def check_goals(game_id, current_airport):
+    sql = """SELECT ports.id, name, money FROM ports, goal 
+           WHERE goal.id = ports.id 
+           AND game = %s 
+           AND airport = %s;"""
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(sql, (game_id, current_airport))
+    result = cursor.fetchone()
+    if result == None:
+        return False
+    return result
+
 player = input("Anna nimi: ")
 points = 20000
 money = 2000
 player_range = 0
-game_over = False
-win = False
 
 all_airports = get_airports()
 start_airport = all_airports[0]['ident']
 current_airport = start_airport
 
 game_id = create_game(money, points, player_range, start_airport, player, all_airports)
-
 # print(word())
 # print(get_airports())
