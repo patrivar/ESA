@@ -7,9 +7,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame1',
+    database='demogame_1',
     user='root',
-    password='tatti',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -36,7 +36,7 @@ def get_goals():
 
 
 def word():
-    sql = """select word from word_list ORDER BY RAND() LIMIT 1;"""
+    sql = """SELECT word FROM word_list ORDER BY RAND() LIMIT 1;"""
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql)
     rows = cursor.fetchone()
@@ -79,6 +79,15 @@ def get_airport_info(icao):
     result = cursor.fetchone()
     return result
 
+
+def airports_in_range(icao,all_ports,player_range):
+    in_range = []
+    for in_range in in_range:
+        dist = calculate_distance(icao,all_ports['ident'])
+        if dist < player_range and not dist == 0:
+            in_range.append(in_range)
+        return in_range
+
 player = input("Anna nimi: ")
 points = 20000
 money = 2000
@@ -94,3 +103,6 @@ game_id = create_game(money, points, player_range, start_airport, player, all_ai
 
 # print(word())
 # print(get_airports())
+
+
+
