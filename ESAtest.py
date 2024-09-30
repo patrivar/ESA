@@ -7,9 +7,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame1',
+    database='demogame_1',
     user='root',
-    password='tatti',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -64,8 +64,8 @@ def create_game(start_money, player_points, player_range, current_airport, playe
     random.shuffle(goal_port)
 
     for i, goal_id in enumerate(goal_list):
-        sql =  """INSERT INTO ports(game, airport, goal) 
-                VALUES (%s, %s, %s);)"""
+        sql = """INSERT INTO ports(game, airport, goal) 
+                VALUES (%s, %s, %s);"""
         cursor = conn.cursor(dictionary=True)
         cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
         return game_id
@@ -94,7 +94,7 @@ def check_goals(game_id, current_airport):
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
-    return distance.distance((start['longitude_deg'],start['latitude_deg'])
+    return distance.distance((start['longitude_deg'],start['latitude_deg']),
                              (end['longitude_deg'], end['latitude_deg'])).km
 
 def airports_in_range(icao,all_ports,player_range):
@@ -106,7 +106,7 @@ def airports_in_range(icao,all_ports,player_range):
         return in_range
 
 def update_location(icao, player_points, user_money, game_id):
-    sql = f"""UPDATE game SET location = %s, points = %s, money = %s WHERE id = %s"""
+    sql = """UPDATE game SET location = %s, points = %s, money = %s WHERE id = %s"""
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql, (icao, player_points, user_money, game_id))
 
