@@ -7,9 +7,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame1',
+    database='demogame_1',
     user='root',
-    password='tatti',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -35,15 +35,16 @@ def get_goals():
     return result
 
 
-def word():
+def word(missing_letters, goal_word):
     sql = """SELECT word FROM word_list ORDER BY RAND() LIMIT 1;"""
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql)
     rows = cursor.fetchone()
-    list1 = []
+    missing_letters = []
+    goal_word = rows['word']
     for i in rows['word']:
-        list1.append(i)
-    return list1
+        missing_letters.append(i)
+    return missing_letters, goal_word
 
 
 def create_game(start_money, player_points, player_range, current_airport, player_name, all_airports):
@@ -94,14 +95,14 @@ def check_goals(game_id, current_airport):
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
-    return distance.distance((start['longitude_deg'],start['latitude_deg'])
+    return distance.distance((start['longitude_deg'],start['latitude_deg']),
                              (end['longitude_deg'], end['latitude_deg'])).km
 
-def airports_in_range(icao,all_ports,player_range):
+def airports_in_range(icao,all_ports):
     in_range = []
     for in_range in in_range:
         dist = calculate_distance(icao,all_ports['ident'])
-        if dist < player_range and not dist == 0:
+        if dist <= 1000 and not dist == 0:
             in_range.append(in_range)
         return in_range
 
@@ -114,8 +115,13 @@ player = input("Anna nimi: ")
 points = 20000
 money = 2000
 player_range = 0
+attempts = 3
 game_over = False
 win = False
+list2 = []
+goal_letters = []
+goal_word = ""
+letters = word(goal_letters, goal_word)
 
 all_airports = get_airports()
 start_airport = all_airports[0]['ident']
@@ -133,8 +139,8 @@ while not game_over:
     goal = check_goals(game_id, current_airport)
     if goal:
         if money >= 50:
-            question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , paina enteriä jatkaaksesi ")
-            if not question == '':
+            question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
+            if not question == 'e':
                 if question == "k":
                     money -= 50
                 if goal['money'] > 0:
@@ -143,8 +149,51 @@ while not game_over:
                     print(f"Sinulla on nyt rahaa {money:.0f}. ")
                 elif goal['money'] == 0:
                     if goal['name'] == 'LETTER':
-
-                        print(f"Löysit kirjaimen }"
+                        list2.append(letters[0])
+                        letters.remove(letters[0])
+                        print(f"Löysit kirjaimen {letters[0]}")
+                    else:
+                        print("Arkku oli tyhjä.")
+                elif goal['name'] == 'BANDIT':
+                    print("Arkkua avatessasi paikalle ilmestyi rosvo. Heitä noppaa koittaaksesi päästä karkuun")
+                    input('\033[31mPaina Enter heittääksesi noppaa.\033[0m')
+                    dice = random.randint(1,6)
+                    if dice % 2 != 0:
+                        money = 0
+                        print("Menetit kaikki rahasi rosvolle.")
+                        game_over = True
+                    elif dice % 2 == 0 and dice != 6:
+                        money = money / 2
+                        print("Menetit puolet rahoistasi rosvolle.")
+                    else:
+                        print("Pääsit karkuun.")
+                else:
+                    print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
+                    question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
+    if money >= 250:
+        airports = airports_in_range(current_airport,all_airports)
+        print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
+        destination = input("Anna lentokentän ICAO: ")
+        money -= 250
+        points -= 500
+        update_location(current_airport, points, money, game_id)
+        current_airport = destination
+        if current_airport == start_airport:
+            choice = input("Haluatko arvata sanan (kyllä = k, ei = e)? ")
+            if choice == "k":
+                attempts -= 1
+                guess = input("Arvaa sana: ")
+                if guess == goal_word:
+                    print("Arvasit sanan oikein.")
+                    win = True
+                if attempts == 0 and guess != goal_word:
+                    print("Arvasit sanan väärin ja arvaus kerrat pääsivät loppumaan.")
+                    game_over = True
+                else:
+                    print("Arvasit sanan väärin. Jatka matkailua ja kokeile myöhemmin uudestaan.")
+    else:
+        print("Rahasi pääsivät loppumaan.")
+        game_over = True
 
 
 # print(word())
