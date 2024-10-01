@@ -72,7 +72,7 @@ def create_game(start_money, player_points, player_range, current_airport, playe
         return game_id
 
 def get_airport_info(icao):
-    sql = """SELECT iso_country, ident, name, latitude_deg, longitud_deg
+    sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
                 FROM airport
                 WHERE ident = %s"""
     cursor = conn.cursor(dictionary = True)
