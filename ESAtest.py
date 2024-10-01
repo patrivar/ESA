@@ -123,5 +123,29 @@ current_airport = start_airport
 
 game_id = create_game(money, points, player_range, start_airport, player, all_airports)
 
+while not game_over:
+    airport = get_airport_info(current_airport)
+    print(f"Olet lentokentällä {airport['name']}")
+    print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
+
+    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
+
+    goal = check_goals(game_id, current_airport)
+    if goal:
+        if money >= 50:
+            question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , paina enteriä jatkaaksesi ")
+            if not question == '':
+                if question == "k":
+                    money -= 50
+                if goal['money'] > 0:
+                    money += goal['money']
+                    print(f"Löysit {goal['name']}")
+                    print(f"Sinulla on nyt rahaa {money:.0f}. ")
+                elif goal['money'] == 0:
+                    if goal['name'] == 'LETTER':
+
+                        print(f"Löysit kirjaimen }"
+
+
 # print(word())
 # print(get_airports())
