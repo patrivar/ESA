@@ -65,13 +65,13 @@ def create_game(start_money, player_points, player_range, current_airport, playe
 
     for i, goal_id in enumerate(goal_list):
         sql =  """INSERT INTO ports(game, airport, goal) 
-                VALUES (%s, %s, %s);"""
+                VALUES (%s, %s, %s);)"""
         cursor = conn.cursor(dictionary=True)
         cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
         return game_id
 
 def get_airport_info(icao):
-    sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
+    sql = """SELECT iso_country, ident, name, latitude_deg, longitud_deg
                 FROM airport
                 WHERE ident = %s"""
     cursor = conn.cursor(dictionary = True)
@@ -94,7 +94,7 @@ def check_goals(game_id, current_airport):
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
-    return distance.distance((start['longitude_deg'],start['latitude_deg']),
+    return distance.distance((start['longitude_deg'],start['latitude_deg'])
                              (end['longitude_deg'], end['latitude_deg'])).km
 
 def airports_in_range(icao,all_ports,player_range):
@@ -122,32 +122,6 @@ start_airport = all_airports[0]['ident']
 current_airport = start_airport
 
 game_id = create_game(money, points, player_range, start_airport, player, all_airports)
-
-while not game_over:
-    airport = get_airport_info(current_airport)
-    print(f"Olet lentokentällä {airport['name']}")
-    print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
-
-    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
-
-    goal = check_goals(game_id, current_airport)
-    if goal:
-        if money >= 50:
-            question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , paina enteriä jatkaaksesi ")
-            if not question == '':
-                if question == "k":
-                    money -= 50
-                if goal['money'] > 0:
-                    money += goal['money']
-                    print(f"Löysit {goal['name']}")
-                    print(f"Sinulla on nyt rahaa {money:.0f}. ")
-                elif goal['money'] == 0:
-                    if goal['name'] == 'LETTER':
-
-                        print(f"Löysit kirjaimen }")
-
-
-
 
 # print(word())
 # print(get_airports())
