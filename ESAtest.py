@@ -114,7 +114,7 @@ def update_location(icao, player_points, user_money, game_id):
 player = input("Anna nimi: ")
 points = 20000
 money = 2000
-player_range = 1000
+player_range = 2500
 attempts = 3
 game_over = False
 win = False
@@ -173,6 +173,9 @@ while not game_over:
     if money >= 250:
         airports = airports_in_range(current_airport,all_airports, player_range)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
+        for airport in airports:
+            airport_distance = calculate_distance(current_airport, airport['ident'])
+            print(f"{airport['name']}, icao koodi: {airport['ident']}, etäisyys: {airport_distance:.0f}km")
         destination = input("Anna lentokentän ICAO: ")
         money -= 250
         points -= 500
