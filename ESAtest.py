@@ -7,9 +7,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame_1',
+    database='demogame1',
     user='root',
-    password='K4rhuKu0l131l3n',
+    password='tatti',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -66,10 +66,10 @@ def create_game(start_money, player_points, player_range, current_airport, playe
 
     for i, goal_id in enumerate(goal_list):
         sql =  """INSERT INTO ports(game, airport, goal) 
-                VALUES (%s, %s, %s);)"""
+                VALUES (%s, %s, %s);"""
         cursor = conn.cursor(dictionary=True)
         cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
-        return game_id
+    return game_id
 
 def get_airport_info(icao):
     sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
@@ -104,7 +104,7 @@ def airports_in_range(icao,all_ports):
         dist = calculate_distance(icao,all_ports['ident'])
         if dist <= 1000 and not dist == 0:
             in_range.append(in_range)
-        return in_range
+    return in_range
 
 def update_location(icao, player_points, user_money, game_id):
     sql = f"""UPDATE game SET location = %s, points = %s, money = %s WHERE id = %s"""
