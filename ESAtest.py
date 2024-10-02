@@ -7,9 +7,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame1',
+    database='demogame_1',
     user='root',
-    password='M4r25q',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -82,7 +82,7 @@ def get_airport_info(icao):
 
 def check_goals(game_id, current_airport):
     sql = """SELECT ports.id, name, money FROM ports, goal 
-           WHERE goal.id = ports.id 
+           WHERE goal.id = ports.goal 
            AND game = %s 
            AND airport = %s;"""
     cursor = conn.cursor(dictionary=True)
@@ -114,11 +114,11 @@ def update_location(icao, player_points, user_money, game_id):
 player = input("Anna nimi: ")
 points = 20000
 money = 2000
-player_range = 2500
+player_range = 5000
 attempts = 3
 game_over = False
 win = False
-list2 = []
+letters_found = []
 goal_letters = []
 goal_word = ""
 letters = word(goal_letters, goal_word)
@@ -133,6 +133,7 @@ while not game_over:
     airport = get_airport_info(current_airport)
     print(f"Olet lentokentällä {airport['name']}")
     print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
+    print(f"Kirjaimia löydetty: {letters_found}")
 
     input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
@@ -149,9 +150,9 @@ while not game_over:
                     print(f"Sinulla on nyt rahaa {money:.0f}. ")
                 elif goal['money'] == 0:
                     if goal['name'] == 'LETTER':
-                        list2.append(letters[0])
-                        letters.remove(letters[0])
-                        print(f"Löysit kirjaimen {letters[0]}")
+                        letters_found.append(goal_letters[0])
+                        goal_letters.remove(goal_letters[0])
+                        print(f"Löysit kirjaimen {letters_found[-1]}")
                     else:
                         print("Arkku oli tyhjä.")
                 elif goal['name'] == 'BANDIT':
@@ -175,7 +176,7 @@ while not game_over:
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
         for airport in airports:
             airport_distance = calculate_distance(current_airport, airport['ident'])
-            print(f"{airport['name']}, icao koodi: {airport['ident']}, etäisyys: {airport_distance:.0f}km")
+            print(f"{airport['name']}, ICAO: {airport['ident']}, etäisyys: {airport_distance:.0f}")
         destination = input("Anna lentokentän ICAO: ")
         money -= 250
         points -= 500
