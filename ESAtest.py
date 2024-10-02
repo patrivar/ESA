@@ -9,7 +9,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='moonS20-un14',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -166,8 +166,10 @@ while not game_over:
                     elif dice % 2 == 0 and dice != 6:
                         money = money / 2
                         print("Menetit puolet rahoistasi rosvolle.")
+                        input('\033[35mPaina Enter jatkaaksesi...\033[0m')
                     else:
                         print("Pääsit karkuun.")
+                        input('\033[35mPaina Enter jatkaaksesi...\033[0m')
                 else:
                     print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
                     question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
