@@ -9,7 +9,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='K4rhuKu0l131l3n',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -66,10 +66,10 @@ def create_game(start_money, player_points, player_range, current_airport, playe
 
     for i, goal_id in enumerate(goal_list):
         sql =  """INSERT INTO ports(game, airport, goal) 
-                VALUES (%s, %s, %s);)"""
+                VALUES (%s, %s, %s);"""
         cursor = conn.cursor(dictionary=True)
         cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
-        return game_id
+    return game_id
 
 def get_airport_info(icao):
     sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
@@ -98,13 +98,13 @@ def calculate_distance(current, target):
     return distance.distance((start['longitude_deg'],start['latitude_deg']),
                              (end['longitude_deg'], end['latitude_deg'])).km
 
-def airports_in_range(icao,all_ports):
+def airports_in_range(icao, all_ports, player_range):
     in_range = []
-    for in_range in in_range:
-        dist = calculate_distance(icao,all_ports['ident'])
-        if dist <= 1000 and not dist == 0:
-            in_range.append(in_range)
-        return in_range
+    for range in all_ports:
+        dist = calculate_distance(icao,range['ident'])
+        if dist <= player_range and not dist == 0:
+            in_range.append(range)
+    return in_range
 
 def update_location(icao, player_points, user_money, game_id):
     sql = f"""UPDATE game SET location = %s, points = %s, money = %s WHERE id = %s"""
@@ -114,7 +114,7 @@ def update_location(icao, player_points, user_money, game_id):
 player = input("Anna nimi: ")
 points = 20000
 money = 2000
-player_range = 0
+player_range = 5000
 attempts = 3
 game_over = False
 win = False
@@ -171,7 +171,7 @@ while not game_over:
                     print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
                     question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
     if money >= 250:
-        airports = airports_in_range(current_airport,all_airports)
+        airports = airports_in_range(current_airport, all_airports, player_range)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
         destination = input("Anna lentokentän ICAO: ")
         money -= 250
@@ -194,7 +194,3 @@ while not game_over:
     else:
         print("Rahasi pääsivät loppumaan.")
         game_over = True
-
-
-# print(word())
-# print(get_airports())
