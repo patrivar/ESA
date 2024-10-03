@@ -9,7 +9,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='K4rhuKu0l131l3n',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -95,6 +95,8 @@ def check_goals(game_id, current_airport):
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
+    print((start['longitude_deg'],start['latitude_deg']),
+                             (end['longitude_deg'], end['latitude_deg']))
     return distance.distance((start['longitude_deg'],start['latitude_deg']),
                              (end['longitude_deg'], end['latitude_deg'])).km
 
@@ -122,6 +124,7 @@ letters_found = []
 goal_letters = []
 goal_word = ""
 letters = word(goal_letters, goal_word)
+print(letters)
 
 all_airports = get_airports()
 start_airport = all_airports[0]['ident']
@@ -150,8 +153,11 @@ while not game_over:
                     print(f"Sinulla on nyt rahaa {money:.0f}. ")
                 elif goal['money'] == 0:
                     if goal['name'] == 'LETTER':
-                        letters_found.append(goal_letters[0])
-                        goal_letters.remove(goal_letters[0])
+                        print(letters[0])
+                        letters_found.append(letters[0][0])
+                        print(letters_found)
+                        letters[0].remove(letters[0][0])
+                        print(letters[0])
                         print(f"Löysit kirjaimen {letters_found[-1]}")
                     else:
                         print("Arkku oli tyhjä.")
@@ -189,10 +195,10 @@ while not game_over:
             if choice == "k":
                 attempts -= 1
                 guess = input("Arvaa sana: ")
-                if guess == goal_word:
+                if guess == letters[1]:
                     print("Arvasit sanan oikein.")
                     win = True
-                if attempts == 0 and guess != goal_word:
+                if attempts == 0 and guess != letters[1]:
                     print("Arvasit sanan väärin ja arvaus kerrat pääsivät loppumaan.")
                     game_over = True
                 else:
@@ -200,7 +206,3 @@ while not game_over:
     else:
         print("Rahasi pääsivät loppumaan.")
         game_over = True
-
-
-# print(word())
-# print(get_airports())
