@@ -95,10 +95,10 @@ def check_goals(game_id, current_airport):
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
-    print((start['longitude_deg'],start['latitude_deg']),
-                             (end['longitude_deg'], end['latitude_deg']))
-    return distance.distance((start['longitude_deg'],start['latitude_deg']),
-                             (end['longitude_deg'], end['latitude_deg'])).km
+    #print((start['longitude_deg'],start['latitude_deg']),
+                             #(end['longitude_deg'], end['latitude_deg']))
+    return distance.distance((start['latitude_deg'],start['longitude_deg']),
+                             (end['latitude_deg'], end['longitude_deg'])).km
 
 def airports_in_range(icao, all_ports, player_range):
     in_range = []
@@ -137,6 +137,7 @@ while not game_over:
     print(f"Olet lentokentällä {airport['name']}")
     print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
     print(f"Kirjaimia löydetty: {letters_found}")
+    print(f"Alku lentokenttäsi ICAO on: {start_airport}")
 
     input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
@@ -198,7 +199,8 @@ while not game_over:
                 if guess == letters[1]:
                     print("Arvasit sanan oikein.")
                     win = True
-                if attempts == 0 and guess != letters[1]:
+                    game_over = True
+                elif attempts == 0 and guess != letters[1]:
                     print("Arvasit sanan väärin ja arvaus kerrat pääsivät loppumaan.")
                     game_over = True
                 else:
@@ -206,3 +208,8 @@ while not game_over:
     else:
         print("Rahasi pääsivät loppumaan.")
         game_over = True
+
+if game_over and win == True:
+    print("Voitit pelin.")
+else:
+    print("Hävisit pelin.")
