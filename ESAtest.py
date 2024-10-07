@@ -1,5 +1,6 @@
 import random
-#import story
+
+import story
 from geopy import distance
 
 import mysql.connector
@@ -9,7 +10,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='moonS20-un14',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -131,6 +132,14 @@ start_airport = all_airports[0]['ident']
 current_airport = start_airport
 
 game_id = create_game(money, points, player_range, start_airport, player, all_airports)
+
+storyline = input("Haluatko lukea tarinan? Kyllä = k tai paina enter ohittaaksesi.")
+if storyline == 'k':
+    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
+    for line in story.getStory():
+        print(line)
+input('\033[35mPaina Enter jatkaaksesi...\033[0m')
+input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
 while not game_over:
     airport = get_airport_info(current_airport)
