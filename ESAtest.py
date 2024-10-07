@@ -139,10 +139,10 @@ while not game_over:
     print(f"Kirjaimia löydetty: {letters_found}")
     print(f"Alku lentokenttäsi ICAO on: {start_airport}")
 
-    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
     goal = check_goals(game_id, current_airport)
     if goal:
+        #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
         if money >= 50:
             question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
             if not question == 'e':
@@ -181,30 +181,36 @@ while not game_over:
                     print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
                     question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
     if money >= 250:
-        airports = airports_in_range(current_airport,all_airports, player_range)
+        airports = airports_in_range(current_airport, all_airports, player_range)
+        print(airports)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
         for airport in airports:
             airport_distance = calculate_distance(current_airport, airport['ident'])
             print(f"{airport['name']}, ICAO: {airport['ident']}, etäisyys: {airport_distance:.0f}")
+        print(airport['ident'])
         destination = input("Anna lentokentän ICAO: ")
-        money -= 250
-        points -= 500
-        update_location(current_airport, points, money, game_id)
-        current_airport = destination
-        if current_airport == start_airport:
-            choice = input("Haluatko arvata sanan (kyllä = k, ei = e)? ")
-            if choice == "k":
-                attempts -= 1
-                guess = input("Arvaa sana: ")
-                if guess == letters[1]:
-                    print("Arvasit sanan oikein.")
-                    win = True
-                    game_over = True
-                elif attempts == 0 and guess != letters[1]:
-                    print("Arvasit sanan väärin ja arvaus kerrat pääsivät loppumaan.")
-                    game_over = True
-                else:
-                    print("Arvasit sanan väärin. Jatka matkailua ja kokeile myöhemmin uudestaan.")
+        if destination == airport['ident']:
+            money -= 250
+            points -= 500
+            update_location(current_airport, points, money, game_id)
+            current_airport = destination
+            if current_airport == start_airport:
+                choice = input("Haluatko arvata sanan (kyllä = k, ei = e)? ")
+                if choice == "k":
+                    attempts -= 1
+                    guess = input("Arvaa sana: ")
+                    if guess == letters[1]:
+                        print("Arvasit sanan oikein.")
+                        win = True
+                        game_over = True
+                    elif attempts == 0 and guess != letters[1]:
+                        print("Arvasit sanan väärin ja arvaus kerrat pääsivät loppumaan.")
+                        game_over = True
+                    else:
+                        print("Arvasit sanan väärin. Jatka matkailua ja kokeile myöhemmin uudestaan.")
+        else:
+            print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
+
     else:
         print("Rahasi pääsivät loppumaan.")
         game_over = True
