@@ -10,7 +10,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='K4rhuKu0l131l3n',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -121,6 +121,7 @@ player_range = 5000
 attempts = 3
 game_over = False
 win = False
+icao_list = []
 letters_found = []
 goal_letters = []
 goal_word = ""
@@ -191,14 +192,13 @@ while not game_over:
                     question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
     if money >= 250:
         airports = airports_in_range(current_airport, all_airports, player_range)
-        print(airports)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
         for airport in airports:
             airport_distance = calculate_distance(current_airport, airport['ident'])
+            icao_list.append(airport['ident'])
             print(f"{airport['name']}, ICAO: {airport['ident']}, etäisyys: {airport_distance:.0f}")
-        print(airport['ident'])
         destination = input("Anna lentokentän ICAO: ")
-        if destination == airport['ident']:
+        if destination in icao_list:
             money -= 250
             points -= 500
             update_location(current_airport, points, money, game_id)
