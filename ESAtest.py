@@ -10,7 +10,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='moonS20-un14',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -198,6 +198,10 @@ while not game_over:
             icao_list.append(airport['ident'])
             print(f"{airport['name']}, ICAO: {airport['ident']}, etäisyys: {airport_distance:.0f}")
         destination = input("Anna lentokentän ICAO: ")
+        if destination not in icao_list:
+            while destination not in icao_list:
+                print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
+                destination = input("Anna lentokentän ICAO: ")
         if destination in icao_list:
             money -= 250
             points -= 500
@@ -217,8 +221,6 @@ while not game_over:
                         game_over = True
                     else:
                         print("Arvasit sanan väärin. Jatka matkailua ja kokeile myöhemmin uudestaan.")
-        else:
-            print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
 
     else:
         print("Rahasi pääsivät loppumaan.")
