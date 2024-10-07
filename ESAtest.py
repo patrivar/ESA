@@ -8,9 +8,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame_1',
+    database='demogame1',
     user='root',
-    password='moonS20-un14',
+    password='M4r25q',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -127,6 +127,8 @@ goal_letters = []
 goal_word = ""
 letters = word(goal_letters, goal_word)
 print(letters)
+letter_display = []
+word_display = ""
 
 all_airports = get_airports()
 start_airport = all_airports[0]['ident']
@@ -146,7 +148,7 @@ while not game_over:
     airport = get_airport_info(current_airport)
     print(f"Olet lentokentällä {airport['name']}")
     print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
-    print(f"Kirjaimia löydetty: {letters_found}")
+    print(f"Kirjaimia löydetty: {word_display}")
     print(f"Alku lentokenttäsi ICAO on: {start_airport}")
 
 
@@ -164,12 +166,23 @@ while not game_over:
                     print(f"Sinulla on nyt rahaa {money:.0f}. ")
                 elif goal['money'] == 0:
                     if goal['name'] == 'LETTER':
-                        print(letters[0])
+                        # print(letters[0])
                         letters_found.append(letters[0][0])
-                        print(letters_found)
+                        # print(letters_found)
                         letters[0].remove(letters[0][0])
-                        print(letters[0])
+                        # print(letters[0])
                         print(f"Löysit kirjaimen {letters_found[-1]}")
+
+
+                        for j in letters[1]:
+                            if j == letters_found[-1]:
+                                word_display += j
+                                letter_display.append(j)
+                            elif j in letter_display:
+                                word_display += j
+                            else:
+                                word_display += "_"
+                        print(f"Löydetyt kirjaimet: {word_display}")
                     else:
                         print("Arkku oli tyhjä.")
                 elif goal['name'] == 'BANDIT':
