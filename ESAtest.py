@@ -8,9 +8,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame_1',
+    database='demogame1',
     user='root',
-    password='K4rhuKu0l131l3n',
+    password='M4r25q',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -131,9 +131,7 @@ letters_found = []
 goal_letters = []
 goal_word = ""
 letters = word(goal_letters, goal_word)
-print(letters)
 letter_display = []
-word_display = ""
 
 all_airports = get_airports()
 start_airport = all_airports[0]['ident']
@@ -149,12 +147,13 @@ if storyline == 'k':
 input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
 while not game_over:
+    word_display = ""
     airport = get_airport_info(current_airport)
     print(f"Olet lentokentällä {airport['name']}")
     print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
-    print(f"Kirjaimia löydetty: {word_display}")
+    #print(f"Kirjaimia löydetty: {word_display}")
     print(f"Alku lentokenttäsi ICAO on: {start_airport}")
-
+    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
     goal = check_goals(game_id, current_airport)
     if goal and goal['opened'] == 0:
@@ -205,16 +204,15 @@ while not game_over:
                     else:
                         print("Pääsit karkuun.")
                         chest_opened(current_airport, game_id)
-                        input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
+    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
     if money >= 250 and points > 0:
         airports = airports_in_range(current_airport, all_airports, player_range)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
         for airport in airports:
             airport_distance = calculate_distance(current_airport, airport['ident'])
             icao_list.append(airport['ident'])
-            print(f"{airport['name']}, ICAO: {airport['ident']}, etäisyys: {airport_distance:.0f}")
-        print(icao_list)
+            print(f"{airport['name']}, ICAO: \033[34m{airport['ident']}\033[0m, etäisyys: {airport_distance:.0f}")
         destination = input("Anna lentokentän ICAO: ")
         if destination not in icao_list:
             while destination not in icao_list:
