@@ -8,9 +8,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame1',
+    database='demogame_1',
     user='root',
-    password='M4r25q',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -82,7 +82,7 @@ def get_airport_info(icao):
     return result
 
 def check_goals(game_id, current_airport):
-    sql = """SELECT ports.id, name, money FROM ports, goal 
+    sql = """SELECT ports.id, name, money, opened FROM ports, goal 
            WHERE goal.id = ports.goal 
            AND game = %s 
            AND airport = %s;"""
@@ -114,10 +114,15 @@ def update_location(icao, player_points, user_money, game_id):
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql, (icao, player_points, user_money, game_id))
 
+def chest_opened(current_airport, game_id):
+    sql = "UPDATE ports SET opened = 1 WHERE airport = %s AND game = %s"
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(sql, (current_airport, game_id))
+
 player = input("Anna nimi: ")
 points = 20000
-money = 2000
-player_range = 5000
+money = 3000
+player_range = 2500
 attempts = 3
 game_over = False
 win = False
@@ -142,7 +147,6 @@ if storyline == 'k':
     for line in story.getStory():
         print(line)
 input('\033[35mPaina Enter jatkaaksesi...\033[0m')
-input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
 while not game_over:
     airport = get_airport_info(current_airport)
@@ -153,7 +157,7 @@ while not game_over:
 
 
     goal = check_goals(game_id, current_airport)
-    if goal:
+    if goal and goal['opened'] == 0:
         #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
         if money >= 50:
             question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
@@ -164,6 +168,7 @@ while not game_over:
                     money += goal['money']
                     print(f"Löysit {goal['name']}")
                     print(f"Sinulla on nyt rahaa {money:.0f}. ")
+                    chest_opened(current_airport, game_id)
                 elif goal['money'] == 0:
                     if goal['name'] == 'LETTER':
                         # print(letters[0])
@@ -181,8 +186,10 @@ while not game_over:
                             else:
                                 word_display += "_"
                         print(f"Löydetyt kirjaimet: {word_display}")
+                        chest_opened(current_airport, game_id)
                     else:
                         print("Arkku oli tyhjä.")
+                        chest_opened(current_airport, game_id)
                 elif goal['name'] == 'BANDIT':
                     print("Arkkua avatessasi paikalle ilmestyi rosvo. Heitä noppaa koittaaksesi päästä karkuun")
                     input('\033[31mPaina Enter heittääksesi noppaa.\033[0m')
@@ -194,9 +201,12 @@ while not game_over:
                     elif dice % 2 == 0 and dice != 6:
                         money = money / 2
                         print("Menetit puolet rahoistasi rosvolle.")
+                        print(f"Sinulle jäi {money:.0f} euroa.")
+                        chest_opened(current_airport, game_id)
                         input('\033[35mPaina Enter jatkaaksesi...\033[0m')
                     else:
                         print("Pääsit karkuun.")
+                        chest_opened(current_airport, game_id)
                         input('\033[35mPaina Enter jatkaaksesi...\033[0m')
                 else:
                     print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
