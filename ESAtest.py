@@ -10,7 +10,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='moonS20-un14',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -161,9 +161,11 @@ while not game_over:
         #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
         if money >= 50:
             question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
-            if not question == 'e':
-                if question == "k":
-                    money -= 50
+            while question != 'k' and question != 'e':
+                print("Vastaus ei ollut hyväksyttävä. Kokeile uudestaa.")
+                question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
+            if question == "k":
+                money -= 50
                 if goal['money'] > 0:
                     money += goal['money']
                     print(f"Löysit {goal['name']}")
@@ -208,9 +210,7 @@ while not game_over:
                         print("Pääsit karkuun.")
                         chest_opened(current_airport, game_id)
                         input('\033[35mPaina Enter jatkaaksesi...\033[0m')
-                else:
-                    print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
-                    question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
+
     if money >= 250 and points > 0:
         airports = airports_in_range(current_airport, all_airports, player_range)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
@@ -232,6 +232,9 @@ while not game_over:
             icao_list.clear()
             if current_airport == start_airport:
                 choice = input("Haluatko arvata sanan (kyllä = k, ei = e)? ")
+                while choice != "k" and choice != "e":
+                    print("Vastaus ei ollut hyväksyttävä. Kokeile uudestaan.")
+                    choice = input("Haluatko arvata sanan (kyllä = k, ei = e)? ")
                 if choice == "k":
                     attempts -= 1
                     guess = input("Arvaa sana: ")
@@ -245,8 +248,10 @@ while not game_over:
                     else:
                         if points > 0:
                             print("Arvasit sanan väärin. Jatka matkailua ja kokeile myöhemmin uudestaan.")
+                            points -= 1000
                         else:
                             print("Arvasit väärin ja pisteesi tippuivat nollaan.")
+                            points = 0
                             game_over = True
 
     else:
