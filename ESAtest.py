@@ -172,6 +172,8 @@ while not game_over:
                         letters[0].remove(letters[0][0])
                         # print(letters[0])
                         print(f"Löysit kirjaimen {letters_found[-1]}")
+
+
                         for j in letters[1]:
                             if j == letters_found[-1]:
                                 word_display += j
@@ -201,7 +203,7 @@ while not game_over:
                 else:
                     print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
                     question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
-    if money >= 250 and points > 0:
+    if money >= 250:
         airports = airports_in_range(current_airport, all_airports, player_range)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
         for airport in airports:
@@ -233,18 +235,10 @@ while not game_over:
                         print("Arvasit sanan väärin ja arvaus kerrat pääsivät loppumaan.")
                         game_over = True
                     else:
-                        if points > 0:
-                            print("Arvasit sanan väärin. Jatka matkailua ja kokeile myöhemmin uudestaan.")
-                        else:
-                            print("Arvasit väärin ja pisteesi tippuivat nollaan.")
-                            game_over = True
+                        print("Arvasit sanan väärin. Jatka matkailua ja kokeile myöhemmin uudestaan.")
 
     else:
-        if points > 0:
-            print("Rahasi pääsivät loppumaan.")
-        game_over = True
-    if points == 0:
-        print("Pisteesi tippuivat nollaan.")
+        print("Rahasi pääsivät loppumaan.")
         game_over = True
 
 if game_over and win == True:
