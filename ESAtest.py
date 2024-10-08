@@ -8,9 +8,9 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     port=3306,
-    database='demogame1',
+    database='demogame_1',
     user='root',
-    password='M4r25q',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -61,7 +61,6 @@ def create_game(start_money, player_points, player_range, current_airport, playe
         for i in range(0,goal['probability'], 1):
             goal_list.append(goal['id'])
 
-    # exclude starting airport
     goal_port = all_airports[1:].copy()
     random.shuffle(goal_port)
 
@@ -96,8 +95,6 @@ def check_goals(game_id, current_airport):
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
-    #print((start['longitude_deg'],start['latitude_deg']),
-                             #(end['longitude_deg'], end['latitude_deg']))
     return distance.distance((start['latitude_deg'],start['longitude_deg']),
                              (end['latitude_deg'], end['longitude_deg'])).km
 
@@ -132,6 +129,7 @@ goal_letters = []
 goal_word = ""
 letters = word(goal_letters, goal_word)
 letter_display = []
+word_display = ""
 
 all_airports = get_airports()
 start_airport = all_airports[0]['ident']
@@ -147,13 +145,13 @@ if storyline == 'k':
 input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
 while not game_over:
-    word_display = ""
     airport = get_airport_info(current_airport)
     print(f"Olet lentokentällä {airport['name']}")
     print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
-    #print(f"Kirjaimia löydetty: {word_display}")
-    print(f"Alku lentokenttäsi ICAO on: {start_airport}")
-    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
+    print(f"Kirjaimia löydetty: {word_display}")
+    print(f"\033[32mAlku lentokenttäsi ICAO on: {start_airport}\033[0m")
+    word_display = ""
+    #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
     goal = check_goals(game_id, current_airport)
     if goal and goal['opened'] == 0:
@@ -200,7 +198,7 @@ while not game_over:
                         print("Menetit puolet rahoistasi rosvolle.")
                         print(f"Sinulle jäi {money:.0f} euroa.")
                         chest_opened(current_airport, game_id)
-                        input('\033[35mPaina Enter jatkaaksesi...\033[0m')
+                        #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
                     else:
                         print("Pääsit karkuun.")
                         chest_opened(current_airport, game_id)
