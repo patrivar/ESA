@@ -158,7 +158,6 @@ while not game_over:
 
     goal = check_goals(game_id, current_airport)
     if goal and goal['opened'] == 0:
-        #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
         if money >= 50:
             question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
             while question != 'k' and question != 'e':
@@ -173,11 +172,8 @@ while not game_over:
                     chest_opened(current_airport, game_id)
                 elif goal['money'] == 0:
                     if goal['name'] == 'LETTER':
-                        # print(letters[0])
                         letters_found.append(letters[0][0])
-                        # print(letters_found)
                         letters[0].remove(letters[0][0])
-                        # print(letters[0])
                         print(f"Löysit kirjaimen {letters_found[-1]}")
                         for j in letters[1]:
                             if j == letters_found[-1]:
