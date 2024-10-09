@@ -10,7 +10,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='K4rhuKu0l131l3n',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -150,8 +150,7 @@ while not game_over:
     print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
     print(f"Kirjaimia löydetty: {word_display}")
     print(f"\033[32mAlku lentokenttäsi ICAO on: {start_airport}\033[0m")
-    word_display = ""
-    #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
+
 
     goal = check_goals(game_id, current_airport)
     if goal and goal['opened'] == 0:
@@ -172,6 +171,7 @@ while not game_over:
                         letters_found.append(letters[0][0])
                         letters[0].remove(letters[0][0])
                         print(f"Löysit kirjaimen {letters_found[-1]}")
+                        word_display = ""
                         for j in letters[1]:
                             if j == letters_found[-1]:
                                 word_display += j
@@ -198,7 +198,6 @@ while not game_over:
                         print("Menetit puolet rahoistasi rosvolle.")
                         print(f"Sinulle jäi {money:.0f} euroa.")
                         chest_opened(current_airport, game_id)
-                        #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
                     else:
                         print("Pääsit karkuun.")
                         chest_opened(current_airport, game_id)
