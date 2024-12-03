@@ -1,0 +1,43 @@
+html {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#map {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+#player {
+    min-width: 15rem;
+    width: 12%;
+    height: auto;
+    position: absolute;
+    border: 1px solid;
+    padding: 1rem;
+    background-color: blue;
+    top: 2.5%;
+    left: 75%;
+    z-index: 999;
+    border-radius: 10px;
+}
+
+p {
+    display: block;
+}
+
+#word {
+    min-width: 10rem;
+    width: 40%;
+    height: 3%;
+    position: absolute;
+    border: 1px solid;
+    padding: 1rem;
+    background-color: red;
+    top: 80%;
+    left: 30%;
+    z-index: 999;
+    text-align: center;
+    font-size: 32px;
+}
