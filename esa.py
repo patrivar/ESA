@@ -61,7 +61,6 @@ def create_game(start_money, player_points, player_range, current_airport, playe
         for i in range(0,goal['probability'], 1):
             goal_list.append(goal['id'])
 
-    # exclude starting airport
     goal_port = all_airports[1:].copy()
     random.shuffle(goal_port)
 
@@ -96,8 +95,6 @@ def check_goals(game_id, current_airport):
 def calculate_distance(current, target):
     start = get_airport_info(current)
     end = get_airport_info(target)
-    #print((start['longitude_deg'],start['latitude_deg']),
-                             #(end['longitude_deg'], end['latitude_deg']))
     return distance.distance((start['latitude_deg'],start['longitude_deg']),
                              (end['latitude_deg'], end['longitude_deg'])).km
 
@@ -121,8 +118,8 @@ def chest_opened(current_airport, game_id):
 
 player = input("Anna nimi: ")
 points = 20000
-money = 2000
-player_range = 5000
+money = 3000
+player_range = 2500
 attempts = 3
 game_over = False
 win = False
@@ -131,8 +128,8 @@ letters_found = []
 goal_letters = []
 goal_word = ""
 letters = word(goal_letters, goal_word)
-
-print(letters)
+letter_display = []
+word_display = ""
 
 all_airports = get_airports()
 start_airport = all_airports[0]['ident']
@@ -146,24 +143,24 @@ if storyline == 'k':
     for line in story.getStory():
         print(line)
 input('\033[35mPaina Enter jatkaaksesi...\033[0m')
-input('\033[35mPaina Enter jatkaaksesi...\033[0m')
 
 while not game_over:
     airport = get_airport_info(current_airport)
     print(f"Olet lentokentällä {airport['name']}")
     print(f"Sinulla on rahaa {money:.0f} ja pisteitä {points:.0f}")
-    print(f"Kirjaimia löydetty: {letters_found}")
-    print(f"Alku lentokenttäsi ICAO on: {start_airport}")
+    print(f"Kirjaimia löydetty: {word_display}")
+    print(f"\033[32mAlku lentokenttäsi ICAO on: {start_airport}\033[0m")
 
 
     goal = check_goals(game_id, current_airport)
     if goal and goal['opened'] == 0:
-        #input('\033[35mPaina Enter jatkaaksesi...\033[0m')
         if money >= 50:
             question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
-            if not question == 'e':
-                if question == "k":
-                    money -= 50
+            while question != 'k' and question != 'e':
+                print("Vastaus ei ollut hyväksyttävä. Kokeile uudestaa.")
+                question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e: ")
+            if question == "k":
+                money -= 50
                 if goal['money'] > 0:
                     money += goal['money']
                     print(f"Löysit {goal['name']}")
@@ -171,12 +168,19 @@ while not game_over:
                     chest_opened(current_airport, game_id)
                 elif goal['money'] == 0:
                     if goal['name'] == 'LETTER':
-                        print(letters[0])
                         letters_found.append(letters[0][0])
-                        print(letters_found)
                         letters[0].remove(letters[0][0])
-                        print(letters[0])
                         print(f"Löysit kirjaimen {letters_found[-1]}")
+                        word_display = ""
+                        for j in letters[1]:
+                            if j == letters_found[-1]:
+                                word_display += j
+                                letter_display.append(j)
+                            elif j in letter_display:
+                                word_display += j
+                            else:
+                                word_display += "_"
+                        print(f"Löydetyt kirjaimet: {word_display}")
                         chest_opened(current_airport, game_id)
                     else:
                         print("Arkku oli tyhjä.")
@@ -192,28 +196,27 @@ while not game_over:
                     elif dice % 2 == 0 and dice != 6:
                         money = money / 2
                         print("Menetit puolet rahoistasi rosvolle.")
+                        print(f"Sinulle jäi {money:.0f} euroa.")
                         chest_opened(current_airport, game_id)
-                        input('\033[35mPaina Enter jatkaaksesi...\033[0m')
                     else:
                         print("Pääsit karkuun.")
                         chest_opened(current_airport, game_id)
-                        input('\033[35mPaina Enter jatkaaksesi...\033[0m')
-                else:
-                    print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
-                    question = input(f"Haluatko avata arkun hinnalla 50€? Kyllä = k , Ei = e ")
+
+    input('\033[35mPaina Enter jatkaaksesi...\033[0m')
     if money >= 250 and points > 0:
         airports = airports_in_range(current_airport, all_airports, player_range)
         print(f'''\033[34mLento etäisyydellä olevia kenttiä: {len(airports)}: \033[0m''')
         for airport in airports:
             airport_distance = calculate_distance(current_airport, airport['ident'])
             icao_list.append(airport['ident'])
-            print(f"{airport['name']}, ICAO: {airport['ident']}, etäisyys: {airport_distance:.0f}")
-        print(icao_list)
+            print(f"{airport['name']}, ICAO: \033[34m{airport['ident']}\033[0m, etäisyys: {airport_distance:.0f}")
         destination = input("Anna lentokentän ICAO: ")
+        destination = destination.upper()
         if destination not in icao_list:
             while destination not in icao_list:
                 print("Antamasi vastaus ei kelpaa. Kokeile uudestaan.")
                 destination = input("Anna lentokentän ICAO: ")
+                destination = destination.upper()
         if destination in icao_list:
             money -= 250
             points -= 500
@@ -222,6 +225,9 @@ while not game_over:
             icao_list.clear()
             if current_airport == start_airport:
                 choice = input("Haluatko arvata sanan (kyllä = k, ei = e)? ")
+                while choice != "k" and choice != "e":
+                    print("Vastaus ei ollut hyväksyttävä. Kokeile uudestaan.")
+                    choice = input("Haluatko arvata sanan (kyllä = k, ei = e)? ")
                 if choice == "k":
                     attempts -= 1
                     guess = input("Arvaa sana: ")
@@ -238,6 +244,7 @@ while not game_over:
                             points -= 1000
                         else:
                             print("Arvasit väärin ja pisteesi tippuivat nollaan.")
+                            points = 0
                             game_over = True
 
     else:
