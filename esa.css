@@ -33,11 +33,20 @@ p {
     height: 3%;
     position: absolute;
     border: 1px solid;
-    padding: 1rem;
+    padding-bottom: 1.3rem;
     background-color: red;
     top: 80%;
     left: 30%;
     z-index: 999;
+    font-size: 30px;
     text-align: center;
-    font-size: 32px;
+    letter-spacing: 1.5rem;
+}
+
+#letterHolder {
+    position: absolute;
+    margin: 0;
+    letter-spacing: 1.1rem;
+    bottom: 0.05px;
+    left: 4.3rem;
 }
