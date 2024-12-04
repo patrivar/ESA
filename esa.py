@@ -1,9 +1,14 @@
 import random
-
+from flask import Flask, request
+import json
+from flask_cors import CORS
 import story
 from geopy import distance
-
 import mysql.connector
+
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 conn = mysql.connector.connect(
     host='localhost',
@@ -15,7 +20,7 @@ conn = mysql.connector.connect(
     collation='utf8mb4_general_ci'
 )
 
-
+@app.route('/getAirports')
 def get_airports():
     sql = """SELECT name, ident, type, iso_country, longitude_deg, latitude_deg 
            FROM airport 
@@ -48,6 +53,7 @@ def word(missing_letters, goal_word):
     return missing_letters, goal_word
 
 
+@app.route('/newGame')
 def create_game(start_money, player_points, player_range, current_airport, player_name, all_airports):
     sql = """INSERT INTO game (money, location, screen_name, points, player_range)
            VALUES (%s,%s,%s,%s,%s);"""
@@ -115,6 +121,10 @@ def chest_opened(current_airport, game_id):
     sql = "UPDATE ports SET opened = 1 WHERE airport = %s AND game = %s"
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql, (current_airport, game_id))
+
+
+if __name__ == "__main__":
+    app.run(use_reloader=True, host='127.0.0.1', port=3000)
 
 player = input("Anna nimi: ")
 points = 20000
@@ -260,3 +270,4 @@ if game_over and win == True:
     print(f"Sinulle jäi {points:.0f} pistettä ja {money:.0f} euroa.")
 else:
     print("Hävisit pelin!")
+
