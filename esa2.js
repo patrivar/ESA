@@ -7,21 +7,21 @@ const apiUrl = "http://127.0.0.1:3000/";
 const airportMarkers = L.featureGroup().addTo(map);
 
 const blueIcon = L.divIcon({className: "blue-icon"});
+const greenIcon = L.divIcon({className: "green-icon"});
 /*
 
  */
 async function getStartAirport() {
     try {
-        const response = await fetch(apiUrl + "getAirports");
+        const response = await fetch(apiUrl + "newGame/waltsu");
         if (!response.ok) {
             throw new Error(response.status.toString());
         }
         const airportInfo = await response.json();
-        const startAirport = airportInfo[0].ident;
-
-        // console.log(startAirport);
+        // const startAirport = airportInfo[0].ident;
+        console.log(airportInfo);
         markers(airportInfo);
-        return startAirport;
+        return airportInfo;
 
     } catch (error) {
         console.error(error.message);
@@ -29,8 +29,9 @@ async function getStartAirport() {
 }
 getStartAirport();
 
-function markers(airportInfo) {
-    console.log(airportInfo);
+function markers(allJson) {
+    console.log(allJson);
+    const airportInfo = allJson.airports;
     console.log(airportInfo.length);
     for (let i = 0; i < airportInfo.length; i++) {
         console.log(i);
@@ -38,7 +39,7 @@ function markers(airportInfo) {
         if (i === 0) {
             var marker = L.marker([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg]).addTo(map);
             map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 10);
-            marker.setIcon(blueIcon);
+            marker.setIcon(greenIcon);
             const popupContent = document.createElement('div');
             const h4 = document.createElement('h4');
             h4.innerHTML = airportInfo[i].name;

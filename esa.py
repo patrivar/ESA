@@ -1,10 +1,11 @@
 import random
-from flask import Flask, request
+from flask import Flask, Response
 import json
 from flask_cors import CORS
 import story
 from geopy import distance
 import mysql.connector
+
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -19,6 +20,25 @@ conn = mysql.connector.connect(
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
+
+points = 20000
+money = 3000
+# player = input("Anna nimi: ")
+player_range = 2500
+attempts = 3
+game_over = False
+win = False
+icao_list = []
+letters_found = []
+goal_letters = []
+goal_word = ""
+# letters = word(goal_letters, goal_word)
+letter_display = []
+word_display = ""
+
+
+
+# game_id = create_game(money, points, player_range, start_airport, player, all_airports)
 
 @app.route('/getAirports')
 def get_airports():
@@ -53,12 +73,22 @@ def word(missing_letters, goal_word):
     return missing_letters, goal_word
 
 
-@app.route('/newGame')
-def create_game(start_money, player_points, player_range, current_airport, player_name, all_airports):
+@app.route('/newGame/<player_name>')
+def create_game(player_name):
+    print(player_name)
+
+    all_airports = get_airports()
+    print(all_airports)
+    start_airport = all_airports[0]['ident']
+    print(start_airport)
+    current_airport = start_airport
+
+    
+# def create_game(start_money, player_points, player_range, current_airport, player_name, all_airports):
     sql = """INSERT INTO game (money, location, screen_name, points, player_range)
            VALUES (%s,%s,%s,%s,%s);"""
     cursor = conn.cursor(dictionary=True)
-    cursor.execute(sql, (start_money, current_airport, player_name, player_points, player_range))
+    cursor.execute(sql, (money, current_airport, player_name, points, player_range))
     game_id = cursor.lastrowid
 
     goals = get_goals()
@@ -75,7 +105,15 @@ def create_game(start_money, player_points, player_range, current_airport, playe
                 VALUES (%s, %s, %s);"""
         cursor = conn.cursor(dictionary=True)
         cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
-    return game_id
+    status = 200
+    result = {
+        "status": status,
+        "airports": all_airports,
+        "current": current_airport,
+        "letter": "l"
+    }
+    json_result = json.dumps(result)
+    return Response(json_result, status=status, mimetype='application/json')
 
 def get_airport_info(icao):
     sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
@@ -126,26 +164,7 @@ def chest_opened(current_airport, game_id):
 if __name__ == "__main__":
     app.run(use_reloader=True, host='127.0.0.1', port=3000)
 
-player = input("Anna nimi: ")
-points = 20000
-money = 3000
-player_range = 2500
-attempts = 3
-game_over = False
-win = False
-icao_list = []
-letters_found = []
-goal_letters = []
-goal_word = ""
-letters = word(goal_letters, goal_word)
-letter_display = []
-word_display = ""
 
-all_airports = get_airports()
-start_airport = all_airports[0]['ident']
-current_airport = start_airport
-
-game_id = create_game(money, points, player_range, start_airport, player, all_airports)
 
 storyline = input("Haluatko lukea tarinan? Kyllä = k tai paina enter ohittaaksesi.")
 if storyline == 'k':
