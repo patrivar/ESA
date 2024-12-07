@@ -80,6 +80,7 @@ function markers(allJson) {
             goButton.addEventListener('click', async function () {
                 allJson.money -= 250;
                 allJson.points -= 500;
+
                 try {
                     const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
                     if (!response.ok) {
