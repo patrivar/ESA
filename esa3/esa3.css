@@ -1,0 +1,70 @@
+html {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#map {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+#player {
+    min-width: 15rem;
+    width: 12%;
+    height: auto;
+    position: absolute;
+    border: 1px solid;
+    padding: 1rem;
+    background-color: blue;
+    top: 2.5%;
+    left: 75%;
+    z-index: 999;
+    border-radius: 10px;
+}
+
+p {
+    display: block;
+}
+
+#word {
+    min-width: 10rem;
+    width: 40%;
+    height: 3%;
+    position: absolute;
+    border: 1px solid;
+    padding-bottom: 1.3rem;
+    background-color: red;
+    top: 80%;
+    left: 30%;
+    z-index: 999;
+    font-size: 30px;
+    text-align: center;
+    letter-spacing: 1.5rem;
+}
+
+#letterHolder {
+    position: absolute;
+    margin: 0;
+    letter-spacing: 1.1rem;
+    bottom: 0.05px;
+    left: 4.3rem;
+}
+
+.blue-icon {
+  background-color: #2474ff;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}
+
+.green-icon {
+  background-color: #098000;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}
+
+.purple-icon {
+  background-color: #800080;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}

@@ -1,10 +1,58 @@
-const map = L.map('map').setView([60.23, 24.74], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
+document.addEventListener("DOMContentLoaded", function() {
+    const map = L.map('map').setView([51.505, -0.09], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
 const apiUrl = "http://127.0.0.1:3000/";
-const airportMarkers = L.featureGroup().addTo(map);
+    fetch('http://localhost:5000/get_airports')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(airport => {
+                let circleColor = 'red'; // Default color for out of range
+                if (airport.in_range) {
+                    circleColor = 'green'; // In range
+                }
+                if (airport.opened) {
+                    circleColor = 'yellow'; // Opened chest
+                }
+                if (airport.start) {
+                    circleColor = 'blue'; // Starting airport
+                }
+                if (airport.goal) {
+                    circleColor = 'purple'; // Airport with a goal
+                }
+
+                const circle = L.circle([airport.latitude_deg, airport.longitude_deg], {
+                    color: circleColor,
+                    fillColor: circleColor,
+                    fillOpacity: 0.5,
+                    radius: 50000
+                }).addTo(map);
+
+                circle.bindPopup(`<b>${airport.name}</b><br>${airport.ident}`);
+
+                circle.on('mouseover', function() {
+                    this.openPopup();
+                });
+
+                circle.on('mouseout', function() {
+                    this.closePopup();
+                });
+
+                circle.on('click', function() {
+                    if (airport.in_range) {
+                        // Travel to the airport
+                        travelToAirport(airport.ident);
+                    } else {
+                        alert("This airport is out of range.");
+                    }
+                });
+            });
+        })
+        .catch(error => console.error('Error fetching airports:', error));
+});
 
 const blueIcon = L.divIcon({className: "blue-icon"});
 /*
