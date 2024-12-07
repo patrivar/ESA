@@ -8,9 +8,7 @@ const airportMarkers = L.featureGroup().addTo(map);
 
 const blueIcon = L.divIcon({className: "blue-icon"});
 const greenIcon = L.divIcon({className: "green-icon"});
-/*
 
- */
 async function getStartAirport() {
     try {
         const response = await fetch(apiUrl + "newGame/waltsu");
@@ -18,7 +16,6 @@ async function getStartAirport() {
             throw new Error(response.status.toString());
         }
         const airportInfo = await response.json();
-        // const startAirport = airportInfo[0].ident;
         console.log(airportInfo);
         markers(airportInfo);
         return airportInfo;
@@ -32,10 +29,14 @@ getStartAirport();
 function markers(allJson) {
     console.log(allJson);
     const airportInfo = allJson.airports;
-    console.log(airportInfo.length);
+    const gameId = allJson.game_id;
+    console.log("Game ID:", gameId);
+    let currentLocation = allJson.current;
+
     for (let i = 0; i < airportInfo.length; i++) {
         console.log(i);
         console.log(airportInfo[i].name, airportInfo[i].latitude_deg, airportInfo[i].longitude_deg);
+
         if (i === 0) {
             var marker = L.marker([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg]).addTo(map);
             map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 10);
@@ -49,16 +50,20 @@ function markers(allJson) {
             goButton.innerHTML = 'Guess here';
             popupContent.append(goButton);
             marker.bindPopup(popupContent);
-            goButton.addEventListener('click', function () {
-                /*
-            gameSetup(
-            `${apiUrl}flyto?game=${gameData.status.id}&dest=${airport.ident}&consumption=${airport.co2_consumption}`
-                );
-            */
+            goButton.addEventListener('click', async function () {
+                try {
+                    const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
+                    if (!response.ok) {
+                        throw new Error(response.status.toString());
+                    }
+                    const data = await response.json();
+                    console.log('Update response:', data);
+                } catch (error) {
+                    console.error('Error updating location:', error);
+                }
             });
         } else {
             var marker = L.marker([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg]).addTo(map);
-            // airportMarkers.addLayer(marker);
             marker.setIcon(blueIcon);
             const popupContent = document.createElement('div');
             const h4 = document.createElement('h4');
@@ -72,46 +77,21 @@ function markers(allJson) {
             p.innerHTML = `Distance null km`;
             popupContent.append(p);
             marker.bindPopup(popupContent);
-            goButton.addEventListener('click', function () {
-            gameSetup(
-            `${apiUrl}flyto?game=${gameData.status.id}&dest=${airport.ident}&consumption=${airport.co2_consumption}`
-                );
+            goButton.addEventListener('click', async function () {
+                allJson.money -= 250;
+                allJson.points -= 500;
+                try {
+                    const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
+                    if (!response.ok) {
+                        throw new Error(response.status.toString());
+                    }
+                    const data = await response.json();
+                    console.log('Update response:', data);
+                } catch (error) {
+                    console.error('Error updating location:', error);
+                }
+                map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 10);
             });
         }
-
-
-        // when you click on a marker
-
-
-
-
     }
 }
-/*
-
-*/
-// airportMarkers.clearLayers();
-
-/*
-(async () => {
-    const startAirport = await getStartAirport();
-    if (startAirport) {
-        airportMarkers.clearLayers();
-        const marker = L.marker([startAirport[0].latitude_deg, startAirport[0].longitude_deg]).addTo(map);
-        airportMarkers.addLayer(marker);
-        marker.setIcon(blueIcon);
-    }
-})();
-*/
-
-
-/*
-async function gameSetUp(){
-    try {
-
-    } catch () {
-
-    }
-}
-
- */
