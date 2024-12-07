@@ -88,6 +88,7 @@ function markers(allJson) {
                 } catch (error) {
                     console.error('Error updating location:', error);
                 }
+                map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 10);
             });
         }
     }
