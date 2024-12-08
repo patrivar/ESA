@@ -8,7 +8,22 @@ const airportMarkers = L.featureGroup().addTo(map);
 
 const blueIcon = L.divIcon({className: "blue-icon"});
 const greenIcon = L.divIcon({className: "green-icon"});
-
+/*
+async function getWord() {
+    try {
+        const response = await fetch(apiUrl + "word");
+        if (!response.ok) {
+            throw new Error(response.status.toString());
+        }
+        const wordInfo = await response.json();
+        console.log(wordInfo);
+        return wordInfo;
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+getWord();
+*/
 async function getStartAirport() {
     try {
         const response = await fetch(apiUrl + "newGame/waltsu");
@@ -113,6 +128,30 @@ function markers(allJson) {
                                     }
                                     const data = await response.json();
                                     console.log('Update chest:', data);
+                                } catch (error) {
+                                    console.error('Error updating location:', error);
+                                }
+                                if (airportGoals[g].goal === 1) {
+                                    allJson.money += 500;
+                                    console.log("Löysit 500€!");
+                                } else if (airportGoals[g].goal === 2) {
+                                    allJson.money += 1000;
+                                    console.log("Löysit 1000€!");
+                                } else if (airportGoals[g].goal === 3) {
+                                    console.log("Arkku oli tyhjä.")
+                                } else if (airportGoals[g].goal === 4) {
+                                    console.log("Löysit kirjaimen!");
+                                } else {
+                                    console.log("Rosvo! Menetit 1000€!");
+                                    allJson.money -= 1000;
+                                }
+                                try {
+                                    const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
+                                    if (!response.ok) {
+                                        throw new Error(response.status.toString());
+                                    }
+                                    const data = await response.json();
+                                    console.log('Update response:', data);
                                 } catch (error) {
                                     console.error('Error updating location:', error);
                                 }
