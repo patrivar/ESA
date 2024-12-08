@@ -1,4 +1,5 @@
 import random
+
 from flask import Flask, Response, jsonify, request
 import json
 from flask_cors import CORS
@@ -15,7 +16,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='K4rhuKu0l131l3n',
+    password='moonS20-un14',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -52,6 +53,7 @@ def get_goals():
     result = cursor.fetchall()
     return result
 
+'''
 def word(missing_letters, goal_word):
     sql = """SELECT word FROM word_list ORDER BY RAND() LIMIT 1;"""
     cursor = conn.cursor(dictionary=True)
@@ -62,6 +64,7 @@ def word(missing_letters, goal_word):
     for i in rows['word']:
         missing_letters.append(i)
     return missing_letters, goal_word
+'''
 
 @app.route('/newGame/<player_name>')
 def create_game(player_name):
@@ -94,18 +97,36 @@ def create_game(player_name):
                 VALUES (%s, %s, %s);"""
         cursor = conn.cursor(dictionary=True)
         cursor.execute(sql, (game_id, goal_port[i]['ident'], goal_id))
+
+    sql_select_goals = "SELECT airport, goal, opened FROM ports WHERE game = %s";
+    goal_cursor = conn.cursor(dictionary=True)
+    goal_cursor.execute(sql_select_goals, (game_id,))
+    goals = goal_cursor.fetchall()
+
+    sql_word = """SELECT word FROM word_list ORDER BY RAND() LIMIT 1;"""
+    word_cursor = conn.cursor(dictionary=True)
+    word_cursor.execute(sql_word)
+    rows = word_cursor.fetchone()
+    missing_letters = []
+    goal_word = rows['word']
+    for i in rows['word']:
+        missing_letters.append(i)
+
     status = 200
-    result = {
+    results = {
         "status": status,
         "airports": all_airports,
+        "goals": goals,
         "current": current_airport,
         "money": money,
         "points": points,
         "range": player_range,
         "name": player_name,
-        "game_id": game_id
+        "game_id": game_id,
+        "word": goal_word,
+        "letters": missing_letters
     }
-    json_result = json.dumps(result)
+    json_result = json.dumps(results)
     return Response(json_result, status=status, mimetype='application/json')
 
 def get_airport_info(icao):
@@ -176,10 +197,26 @@ def update_location():
     except Exception as e:
         return Response(str(e), status=500)
 
-def chest_opened(current_airport, game_id):
-    sql = "UPDATE ports SET opened = 1 WHERE airport = %s AND game = %s"
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(sql, (current_airport, game_id))
+@app.route("/updateChest", methods=["GET"])
+def chest_opened():
+    icao = request.args.get('icao')
+    game_id = request.args.get('game_id')
+    user_money = request.args.get('money', default=0, type=int)
+
+    if not icao or not game_id:
+        return Response("Missing parameters", status=400)
+
+    try:
+        sql = "UPDATE ports SET opened = 1 WHERE airport = %s AND game = %s"
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(sql, (icao, game_id))
+
+        money_sql = "UPDATE game SET money = %s WHERE id = %s"
+        money_cursor = conn.cursor(dictionary=True)
+        money_cursor.execute(money_sql, (user_money, game_id))
+
+    except Exception as e:
+        return Response(str(e), status=500)
 
 if __name__ == "__main__":
     app.run(use_reloader=True, host='127.0.0.1', port=3000)
