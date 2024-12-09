@@ -8,6 +8,11 @@ const airportMarkers = L.featureGroup().addTo(map);
 
 const blueIcon = L.divIcon({className: "blue-icon"});
 const greenIcon = L.divIcon({className: "green-icon"});
+
+const winScreen = document.querySelector("#win");
+winScreen.classList.add("hide");
+const loseScreen = document.querySelector("#lose");
+loseScreen.classList.add("hide");
 /*
 async function getWord() {
     try {
@@ -50,6 +55,16 @@ function markers(allJson) {
     console.log("Game ID:", gameId);
     let currentLocation = allJson.current;
     console.log(currentLocation);
+    const letters_found = []
+    const goal_letters = allJson.letters;
+    console.log(goal_letters);
+    const goal_word = allJson.word;
+    console.log(goal_word);
+    const letter_display = []
+    // let gameOver = false;
+    // let win = false;
+    let attempts = 3;
+
 
     for (let i = 0; i < airportInfo.length; i++) {
         console.log(i);
@@ -65,7 +80,7 @@ function markers(allJson) {
             popupContent.append(h4);
             const goButton = document.createElement('button');
             goButton.classList.add('button');
-            goButton.innerHTML = 'Guess here';
+            goButton.innerHTML = 'Guess the word';
             popupContent.append(goButton);
             marker.bindPopup(popupContent);
             goButton.addEventListener('click', async function () {
@@ -79,6 +94,22 @@ function markers(allJson) {
                 } catch (error) {
                     console.error('Error updating location:', error);
                 }
+                map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 8);
+                setTimeout(async function() {
+                    const guess = prompt("Arvaa sana");
+                    if (guess === goal_word) {
+                        console.log("Arvasit sanan oikein!");
+                        winScreen.classList.remove("hide");
+                    } else if (attempts >= 1) {
+                        attempts -= 1;
+                        console.log("Arvasit sanan väärin!");
+                        console.log("Arvauksia jäljellä: ", attempts);
+                    }
+                    if (attempts === 0) {
+                        console.log("Arvausyrityksesi loppuivat!");
+                        loseScreen.classList.remove("hide");
+                    }
+                }, 1200);
             });
         } else {
             var marker = L.marker([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg]).addTo(map);
@@ -140,7 +171,25 @@ function markers(allJson) {
                                 } else if (airportGoals[g].goal === 3) {
                                     console.log("Arkku oli tyhjä.")
                                 } else if (airportGoals[g].goal === 4) {
-                                    console.log("Löysit kirjaimen!");
+                                    letters_found.push(goal_letters[0]);
+                                    goal_letters.shift();
+                                    console.log("Löysit kirjaimen", letters_found.slice(-1)[0], "!");
+                                    let word_display = "";
+                                    for (let j of goal_word) {
+                                        if (j === letters_found.slice(-1)[0]) {
+                                            word_display += j;
+                                            letter_display.push(j);
+                                        } else if (letter_display.includes(j)) {
+                                            word_display += j;
+                                        } else {
+                                            word_display += "_";
+                                        }
+                                    }
+                                    console.log(goal_letters);
+                                    console.log(letters_found);
+                                    console.log(letter_display);
+                                    console.log(word_display);
+
                                 } else {
                                     console.log("Rosvo! Menetit 1000€!");
                                     allJson.money -= 1000;
@@ -157,7 +206,6 @@ function markers(allJson) {
                                 }
                             }
                         }, 1200);
-
                     }
                 }
             });
