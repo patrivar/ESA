@@ -8,6 +8,13 @@ const airportMarkers = L.featureGroup().addTo(map);
 
 const blueIcon = L.divIcon({className: "blue-icon"});
 const greenIcon = L.divIcon({className: "green-icon"});
+const orangeIcon = L.divIcon({className: "orange-icon"});
+
+let playerName = document.querySelector("#name");
+let playerPoints = document.querySelector("#points");
+let playerMoney = document.querySelector("#money");
+let tries = document.querySelector("#tries");
+let word = document.querySelector("#word");
 
 const winScreen = document.querySelector("#win");
 winScreen.classList.add("hide");
@@ -99,6 +106,8 @@ function markers(allJson) {
                     } catch (error) {
                         console.error('Error updating location:', error);
                     }
+                    playerPoints.innerHTML = `Pisteet: ${allJson.points}`;
+                    playerMoney.innerHTML = `Rahat: ${allJson.money}`;
                     map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 8);
                     setTimeout(async function() {
                         const guess = prompt("Arvaa sana");
@@ -118,6 +127,8 @@ function markers(allJson) {
                             } catch (error) {
                                 console.error('Error updating location:', error);
                             }
+                            tries.innerHTML = `Arvaukset: ${attempts}`;
+                            playerPoints.innerHTML = `Pisteet: ${allJson.points}`;
                             console.log("Arvasit sanan väärin!");
                             console.log("Arvauksia jäljellä: ", attempts);
                         }
@@ -164,6 +175,8 @@ function markers(allJson) {
                     } catch (error) {
                         console.error('Error updating location:', error);
                     }
+                    playerPoints.innerHTML = `Pisteet: ${allJson.points}`;
+                    playerMoney.innerHTML = `Rahat: ${allJson.money}`;
                     map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 8);
                     if (allJson.money < 50) {
                         loseScreen.classList.remove("hide");
@@ -186,6 +199,9 @@ function markers(allJson) {
                                         } catch (error) {
                                             console.error('Error updating location:', error);
                                         }
+                                        var marker = L.marker([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg]).addTo(map);
+                                        marker.setIcon(orangeIcon);
+                                        playerMoney.innerHTML = `Rahat: ${allJson.money}`;
                                         if (airportGoals[g].goal === 1) {
                                             allJson.money += 500;
                                             console.log("Löysit 500€!");
@@ -213,7 +229,7 @@ function markers(allJson) {
                                             console.log(letters_found);
                                             console.log(letter_display);
                                             console.log(word_display);
-
+                                            word.innerHTML = word_display;
                                         } else {
                                             console.log("Rosvo! Menetit 1000€!");
                                             allJson.money -= 1000;
@@ -228,6 +244,8 @@ function markers(allJson) {
                                         } catch (error) {
                                             console.error('Error updating location:', error);
                                         }
+                                        playerPoints.innerHTML = `Pisteet: ${allJson.points}`;
+                                        playerMoney.innerHTML = `Rahat: ${allJson.money}`;
                                     }
                                 }, 1200);
                             }

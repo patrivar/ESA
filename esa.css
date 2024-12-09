@@ -65,6 +65,12 @@ p {
   border: 5px solid rgba(255, 255, 255, 0.5);
 }
 
+.orange-icon {
+  background-color: #ff9800;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+}
+
 .hide {
   display: none;
 }
