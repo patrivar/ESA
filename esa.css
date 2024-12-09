@@ -12,17 +12,18 @@ html {
 }
 
 #player {
-    min-width: 15rem;
-    width: 12%;
+    min-width: 10rem;
+    width: 6%;
     height: auto;
     position: absolute;
     border: 1px solid;
     padding: 1rem;
-    background-color: blue;
+    background-color: #9c9ca1;
     top: 2.5%;
-    left: 75%;
+    left: 85%;
     z-index: 999;
     border-radius: 10px;
+    font-size: 14px;
 }
 
 p {
@@ -30,27 +31,17 @@ p {
 }
 
 #word {
-    min-width: 10rem;
-    width: 40%;
+    min-width: 20rem;
+    width: 20%;
     height: 3%;
     position: absolute;
-    border: 1px solid;
     padding-bottom: 1.3rem;
-    background-color: red;
     top: 80%;
-    left: 30%;
+    left: 40%;
     z-index: 999;
-    font-size: 30px;
-    text-align: center;
+    font-size: 45px;
+    text-align: end;
     letter-spacing: 1.5rem;
-}
-
-#letterHolder {
-    position: absolute;
-    margin: 0;
-    letter-spacing: 1.1rem;
-    bottom: 0.05px;
-    left: 4.3rem;
 }
 
 .blue-icon {

@@ -16,29 +16,17 @@ let playerMoney = document.querySelector("#money");
 let tries = document.querySelector("#tries");
 let word = document.querySelector("#word");
 
+const player = prompt("Syötä nimesi: ");
+playerName.innerHTML = `Pelaaja: ${player}`;
+
 const winScreen = document.querySelector("#win");
 winScreen.classList.add("hide");
 const loseScreen = document.querySelector("#lose");
 loseScreen.classList.add("hide");
-/*
-async function getWord() {
-    try {
-        const response = await fetch(apiUrl + "word");
-        if (!response.ok) {
-            throw new Error(response.status.toString());
-        }
-        const wordInfo = await response.json();
-        console.log(wordInfo);
-        return wordInfo;
-    } catch (error) {
-        console.error(error.message);
-    }
-}
-getWord();
-*/
+
 async function getStartAirport() {
     try {
-        const response = await fetch(apiUrl + "newGame/waltsu");
+        const response = await fetch(apiUrl + "newGame/" + player);
         if (!response.ok) {
             throw new Error(response.status.toString());
         }
@@ -68,8 +56,6 @@ function markers(allJson) {
     const goal_word = allJson.word;
     console.log(goal_word);
     const letter_display = []
-    // let gameOver = false;
-    // let win = false;
     let attempts = 3;
 
 
@@ -87,7 +73,7 @@ function markers(allJson) {
             popupContent.append(h4);
             const goButton = document.createElement('button');
             goButton.classList.add('button');
-            goButton.innerHTML = 'Guess the word';
+            goButton.innerHTML = 'Matkusta ja arvaa sana';
             popupContent.append(goButton);
             marker.bindPopup(popupContent);
             if (allJson.money < 250 || allJson.points === 0) {
@@ -96,6 +82,9 @@ function markers(allJson) {
                 goButton.addEventListener('click', async function () {
                     allJson.money -= 250;
                     allJson.points -= 500;
+                    if (allJson.money < 0) {
+                        allJson.money = 0;
+                    }
                     try {
                         const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
                         if (!response.ok) {
@@ -127,6 +116,7 @@ function markers(allJson) {
                             } catch (error) {
                                 console.error('Error updating location:', error);
                             }
+                            alert("Arvasit sanan väärin!");
                             tries.innerHTML = `Arvaukset: ${attempts}`;
                             playerPoints.innerHTML = `Pisteet: ${allJson.points}`;
                             console.log("Arvasit sanan väärin!");
@@ -149,11 +139,8 @@ function markers(allJson) {
             popupContent.append(h4);
             const goButton = document.createElement('button');
             goButton.classList.add('button');
-            goButton.innerHTML = 'Fly here';
+            goButton.innerHTML = 'Matkusta kohteeseen';
             popupContent.append(goButton);
-            const p = document.createElement('p');
-            p.innerHTML = `Distance null km`;
-            popupContent.append(p);
             marker.bindPopup(popupContent);
             if (allJson.money < 250 || allJson.points === 0) {
                 loseScreen.classList.remove("hide");
@@ -162,9 +149,11 @@ function markers(allJson) {
                     console.log(airportInfo[i]);
                     currentLocation = airportInfo[i].ident;
                     console.log(currentLocation);
-                    // goButton.classList.add("hide");
                     allJson.money -= 250;
                     allJson.points -= 500;
+                    if (allJson.money < 0) {
+                        allJson.money = 0;
+                    }
                     try {
                         const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
                         if (!response.ok) {
@@ -185,10 +174,14 @@ function markers(allJson) {
                             console.log(airportGoals[g]);
                             if (currentLocation === airportGoals[g].airport && airportGoals[g].opened === 0) {
                                 setTimeout(async function() {
-                                    const openChest = "Do you want to open the chest?";
+                                    const openChest = "Haluatko avata arkun?";
                                     if (confirm(openChest) === true) {
                                         allJson.money -= 50;
+                                        if (allJson.money < 0) {
+                                            allJson.money = 0;
+                                        }
                                         airportGoals[g].opened = 1;
+                                        goButton.classList.add("hide");
                                         try {
                                             const response = await fetch(`${apiUrl}updateChest?icao=${airportInfo[i].ident}&game_id=${gameId}&money=${allJson.money}`);
                                             if (!response.ok) {
@@ -205,11 +198,14 @@ function markers(allJson) {
                                         if (airportGoals[g].goal === 1) {
                                             allJson.money += 500;
                                             console.log("Löysit 500€!");
+                                            alert("Löysit 500€!");
                                         } else if (airportGoals[g].goal === 2) {
                                             allJson.money += 1000;
                                             console.log("Löysit 1000€!");
+                                            alert("Löysit 1000€!");
                                         } else if (airportGoals[g].goal === 3) {
-                                            console.log("Arkku oli tyhjä.")
+                                            console.log("Arkku oli tyhjä.");
+                                            alert("Arkku oli tyhjä.");
                                         } else if (airportGoals[g].goal === 4) {
                                             letters_found.push(goal_letters[0]);
                                             goal_letters.shift();
@@ -230,9 +226,11 @@ function markers(allJson) {
                                             console.log(letter_display);
                                             console.log(word_display);
                                             word.innerHTML = word_display;
+                                            alert("Löysit kirjaimen!");
                                         } else {
                                             console.log("Rosvo! Menetit 1000€!");
                                             allJson.money -= 1000;
+                                            alert("Rosvo! Menetit 1000€!");
                                         }
                                         try {
                                             const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
