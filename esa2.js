@@ -83,34 +83,52 @@ function markers(allJson) {
             goButton.innerHTML = 'Guess the word';
             popupContent.append(goButton);
             marker.bindPopup(popupContent);
-            goButton.addEventListener('click', async function () {
-                try {
-                    const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
-                    if (!response.ok) {
-                        throw new Error(response.status.toString());
+            if (allJson.money < 250 || allJson.points === 0) {
+                loseScreen.classList.remove("hide");
+            } else {
+                goButton.addEventListener('click', async function () {
+                    allJson.money -= 250;
+                    allJson.points -= 500;
+                    try {
+                        const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
+                        if (!response.ok) {
+                            throw new Error(response.status.toString());
+                        }
+                        const data = await response.json();
+                        console.log('Update response:', data);
+                    } catch (error) {
+                        console.error('Error updating location:', error);
                     }
-                    const data = await response.json();
-                    console.log('Update response:', data);
-                } catch (error) {
-                    console.error('Error updating location:', error);
-                }
-                map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 8);
-                setTimeout(async function() {
-                    const guess = prompt("Arvaa sana");
-                    if (guess === goal_word) {
-                        console.log("Arvasit sanan oikein!");
-                        winScreen.classList.remove("hide");
-                    } else if (attempts >= 1) {
-                        attempts -= 1;
-                        console.log("Arvasit sanan väärin!");
-                        console.log("Arvauksia jäljellä: ", attempts);
-                    }
-                    if (attempts === 0) {
-                        console.log("Arvausyrityksesi loppuivat!");
-                        loseScreen.classList.remove("hide");
-                    }
-                }, 1200);
-            });
+                    map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 8);
+                    setTimeout(async function() {
+                        const guess = prompt("Arvaa sana");
+                        if (guess === goal_word) {
+                            console.log("Arvasit sanan oikein!");
+                            winScreen.classList.remove("hide");
+                        } else if (attempts >= 1) {
+                            attempts -= 1;
+                            allJson.points -= 1000;
+                            try {
+                                const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
+                                if (!response.ok) {
+                                    throw new Error(response.status.toString());
+                                }
+                                const data = await response.json();
+                                console.log('Update response:', data);
+                            } catch (error) {
+                                console.error('Error updating location:', error);
+                            }
+                            console.log("Arvasit sanan väärin!");
+                            console.log("Arvauksia jäljellä: ", attempts);
+                        }
+                        if (attempts === 0) {
+                            console.log("Arvausyrityksesi loppuivat!");
+                            loseScreen.classList.remove("hide");
+                        }
+                    }, 1200);
+                });
+            }
+
         } else {
             var marker = L.marker([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg]).addTo(map);
             marker.setIcon(blueIcon);
@@ -126,89 +144,97 @@ function markers(allJson) {
             p.innerHTML = `Distance null km`;
             popupContent.append(p);
             marker.bindPopup(popupContent);
-            goButton.addEventListener('click', async function () {
-                console.log(airportInfo[i]);
-                currentLocation = airportInfo[i].ident;
-                console.log(currentLocation);
-                // goButton.classList.add("hide");
-                allJson.money -= 250;
-                allJson.points -= 500;
-                try {
-                    const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
-                    if (!response.ok) {
-                        throw new Error(response.status.toString());
+            if (allJson.money < 250 || allJson.points === 0) {
+                loseScreen.classList.remove("hide");
+            } else {
+                goButton.addEventListener('click', async function () {
+                    console.log(airportInfo[i]);
+                    currentLocation = airportInfo[i].ident;
+                    console.log(currentLocation);
+                    // goButton.classList.add("hide");
+                    allJson.money -= 250;
+                    allJson.points -= 500;
+                    try {
+                        const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
+                        if (!response.ok) {
+                            throw new Error(response.status.toString());
+                        }
+                        const data = await response.json();
+                        console.log('Update response:', data);
+                    } catch (error) {
+                        console.error('Error updating location:', error);
                     }
-                    const data = await response.json();
-                    console.log('Update response:', data);
-                } catch (error) {
-                    console.error('Error updating location:', error);
-                }
-                map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 8);
-                for (let g = 0; g < airportGoals.length; g++) {
-                    console.log(airportGoals[g]);
-                    if (currentLocation === airportGoals[g].airport && airportGoals[g].opened === 0) {
-                        setTimeout(async function() {
-                            const openChest = "Do you want to open the chest?";
-                            if (confirm(openChest) === true) {
-                                allJson.money -= 50;
-                                airportGoals[g].opened = 1;
-                                try {
-                                    const response = await fetch(`${apiUrl}updateChest?icao=${airportInfo[i].ident}&game_id=${gameId}&money=${allJson.money}`);
-                                    if (!response.ok) {
-                                        throw new Error(response.status.toString());
-                                    }
-                                    const data = await response.json();
-                                    console.log('Update chest:', data);
-                                } catch (error) {
-                                    console.error('Error updating location:', error);
-                                }
-                                if (airportGoals[g].goal === 1) {
-                                    allJson.money += 500;
-                                    console.log("Löysit 500€!");
-                                } else if (airportGoals[g].goal === 2) {
-                                    allJson.money += 1000;
-                                    console.log("Löysit 1000€!");
-                                } else if (airportGoals[g].goal === 3) {
-                                    console.log("Arkku oli tyhjä.")
-                                } else if (airportGoals[g].goal === 4) {
-                                    letters_found.push(goal_letters[0]);
-                                    goal_letters.shift();
-                                    console.log("Löysit kirjaimen", letters_found.slice(-1)[0], "!");
-                                    let word_display = "";
-                                    for (let j of goal_word) {
-                                        if (j === letters_found.slice(-1)[0]) {
-                                            word_display += j;
-                                            letter_display.push(j);
-                                        } else if (letter_display.includes(j)) {
-                                            word_display += j;
+                    map.flyTo([airportInfo[i].latitude_deg, airportInfo[i].longitude_deg], 8);
+                    if (allJson.money < 50) {
+                        loseScreen.classList.remove("hide");
+                    } else {
+                        for (let g = 0; g < airportGoals.length; g++) {
+                            console.log(airportGoals[g]);
+                            if (currentLocation === airportGoals[g].airport && airportGoals[g].opened === 0) {
+                                setTimeout(async function() {
+                                    const openChest = "Do you want to open the chest?";
+                                    if (confirm(openChest) === true) {
+                                        allJson.money -= 50;
+                                        airportGoals[g].opened = 1;
+                                        try {
+                                            const response = await fetch(`${apiUrl}updateChest?icao=${airportInfo[i].ident}&game_id=${gameId}&money=${allJson.money}`);
+                                            if (!response.ok) {
+                                                throw new Error(response.status.toString());
+                                            }
+                                            const data = await response.json();
+                                            console.log('Update chest:', data);
+                                        } catch (error) {
+                                            console.error('Error updating location:', error);
+                                        }
+                                        if (airportGoals[g].goal === 1) {
+                                            allJson.money += 500;
+                                            console.log("Löysit 500€!");
+                                        } else if (airportGoals[g].goal === 2) {
+                                            allJson.money += 1000;
+                                            console.log("Löysit 1000€!");
+                                        } else if (airportGoals[g].goal === 3) {
+                                            console.log("Arkku oli tyhjä.")
+                                        } else if (airportGoals[g].goal === 4) {
+                                            letters_found.push(goal_letters[0]);
+                                            goal_letters.shift();
+                                            console.log("Löysit kirjaimen", letters_found.slice(-1)[0], "!");
+                                            let word_display = "";
+                                            for (let j of goal_word) {
+                                                if (j === letters_found.slice(-1)[0]) {
+                                                    word_display += j;
+                                                    letter_display.push(j);
+                                                } else if (letter_display.includes(j)) {
+                                                    word_display += j;
+                                                } else {
+                                                    word_display += "_";
+                                                }
+                                            }
+                                            console.log(goal_letters);
+                                            console.log(letters_found);
+                                            console.log(letter_display);
+                                            console.log(word_display);
+
                                         } else {
-                                            word_display += "_";
+                                            console.log("Rosvo! Menetit 1000€!");
+                                            allJson.money -= 1000;
+                                        }
+                                        try {
+                                            const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
+                                            if (!response.ok) {
+                                                throw new Error(response.status.toString());
+                                            }
+                                            const data = await response.json();
+                                            console.log('Update response:', data);
+                                        } catch (error) {
+                                            console.error('Error updating location:', error);
                                         }
                                     }
-                                    console.log(goal_letters);
-                                    console.log(letters_found);
-                                    console.log(letter_display);
-                                    console.log(word_display);
-
-                                } else {
-                                    console.log("Rosvo! Menetit 1000€!");
-                                    allJson.money -= 1000;
-                                }
-                                try {
-                                    const response = await fetch(`${apiUrl}update?icao=${airportInfo[i].ident}&game_id=${gameId}&points=${allJson.points}&money=${allJson.money}`);
-                                    if (!response.ok) {
-                                        throw new Error(response.status.toString());
-                                    }
-                                    const data = await response.json();
-                                    console.log('Update response:', data);
-                                } catch (error) {
-                                    console.error('Error updating location:', error);
-                                }
+                                }, 1200);
                             }
-                        }, 1200);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 }
