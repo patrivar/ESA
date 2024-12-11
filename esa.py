@@ -16,7 +16,7 @@ conn = mysql.connector.connect(
     port=3306,
     database='demogame_1',
     user='root',
-    password='moonS20-un14',
+    password='K4rhuKu0l131l3n',
     autocommit=True,
     collation='utf8mb4_general_ci'
 )
@@ -24,15 +24,6 @@ conn = mysql.connector.connect(
 points = 20000
 money = 3000
 player_range = 2500
-attempts = 3
-game_over = False
-win = False
-icao_list = []
-letters_found = []
-goal_letters = []
-goal_word = ""
-letter_display = []
-word_display = ""
 
 @app.route('/getAirports')
 def get_airports():
@@ -53,18 +44,6 @@ def get_goals():
     result = cursor.fetchall()
     return result
 
-'''
-def word(missing_letters, goal_word):
-    sql = """SELECT word FROM word_list ORDER BY RAND() LIMIT 1;"""
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(sql)
-    rows = cursor.fetchone()
-    missing_letters = []
-    goal_word = rows['word']
-    for i in rows['word']:
-        missing_letters.append(i)
-    return missing_letters, goal_word
-'''
 
 @app.route('/newGame/<player_name>')
 def create_game(player_name):
@@ -149,20 +128,6 @@ def check_goals(game_id, current_airport):
     if result == None:
         return False
     return result
-
-def calculate_distance(current, target):
-    start = get_airport_info(current)
-    end = get_airport_info(target)
-    return distance.distance((start['latitude_deg'], start['longitude_deg']),
-                             (end['latitude_deg'], end['longitude_deg'])).km
-
-def airports_in_range(icao, all_ports, player_range):
-    in_range = []
-    for range in all_ports:
-        dist = calculate_distance(icao, range['ident'])
-        if dist <= player_range and not dist == 0:
-            in_range.append(range)
-    return in_range
 
 @app.route('/update', methods=['GET'])
 def update_location():
